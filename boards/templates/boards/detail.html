@@ -1,0 +1,17 @@
+{% extends 'boards/base.html' %}
+{% block title %}INDEX{% endblock %}
+{% block body %}
+<h1>게시글 목록</h1>
+
+<h1>{{ board.pk }} 번째 글</h1>
+<h2>{{board.title}}</h2>
+
+<hr>
+
+
+<p> {{board.content}}</p>
+<a href = {% url 'board:index' %}>뒤로가기</a>
+
+
+{% endblock %}
+    
