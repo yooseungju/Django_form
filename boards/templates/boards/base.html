@@ -10,6 +10,20 @@
 </head>
 <body>
     <div class="container">
+    {% if user.is_authenticated %}
+        <h3>안녕, {{ user.username }}</h3>
+        <a href="{% url 'accounts:edit' %}">회원수정</a>
+        <a href="{% url 'accounts:logout' %}">로그아웃</a>
+        
+        <form action ="{% url 'accounts:delete'%}" method="POST" style="display:inline" onsubmit="return confirm('R U SURE??')">
+            {% csrf_token %}
+            <input type="submit" value="탈퇴"/>
+        </form>
+    {% else %}
+        <a href="{% url 'accounts:login' %}">로그인</a>
+        <a href="{% url 'accounts:signup' %}">회원가입</a>
+    {% endif %}
+        
     {% block body %}
     {% endblock %}
     </div>
