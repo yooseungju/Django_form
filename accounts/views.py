@@ -3,7 +3,6 @@ from django.contrib.auth.forms import UserCreationForm, AuthenticationForm, Pass
 from django.contrib.auth import login as auth_login
 from django.contrib.auth import logout as auth_logout
 from django.contrib.auth import update_session_auth_hash
-
 from .forms import UserCustomChangeForm
 
 def edit(request):
@@ -15,7 +14,8 @@ def edit(request):
     else:
         form = UserCustomChangeForm(instance=request.user)
     context = {'form':form,}
-    return render(request, 'accounts/edit.html', context)
+    return render(request, 'accounts/auth_form.html', context)
+    
 def signup(request):
     if request.user.is_authenticated:
         return redirect('boards:index')
@@ -32,7 +32,7 @@ def signup(request):
         'form':form,
     }
         
-    return render(request, 'accounts/signup.html',context)
+    return render(request, 'accounts/auth_form.html',context)
     
 def login(request):
     if request.user.is_authenticated:
@@ -42,12 +42,13 @@ def login(request):
         form = AuthenticationForm(request, request.POST)
         if form.is_valid():
             auth_login(request, form.get_user())
-            return redirect('boards:index')
+            return redirect(request.POST.get('next') or 'boards:index')
         
     else:
         form = AuthenticationForm()
     context = {
         'form':form,
+        'next':request.GET.get('next',''),
         
     }
     return render(request,'accounts/login.html', context)
@@ -74,4 +75,4 @@ def change_password(request):
     else:
         form = PasswordChangeForm(request.user)
     context = {'form':form,}
-    return render(request, 'accounts/change_password.html', context)
+    return render(request, 'accounts/auth_form.html', context)
