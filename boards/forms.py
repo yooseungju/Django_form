@@ -9,7 +9,7 @@ from .models import Board
 class BoardForm(forms.ModelForm):
     class Meta:
         model =Board
-        fields = '__all__'
+        fields = ['title', 'content',]
         widgets = {'title': forms.TextInput(attrs={
             'placeholder':'제목을 입력해 주세요',
             'class':'title',

@@ -15,7 +15,9 @@ def create(request):
     if request.method == "POST":
         form = BoardForm(request.POST)
         if form.is_valid():
-            board = form.save()
+            board = form.save(commit=False)
+            board.user = request.user
+            board.save()
             return redirect('boards:detail', board.pk)
     else:
         form =BoardForm()
@@ -32,24 +34,34 @@ def detail(request, board_pk):
         
 @login_required     
 def delete(request, board_pk):
+    
     board  = get_object_or_404(Board, pk = board_pk)
-    if request.method == "POST":
-        board.delete()
-        return redirect('boards:index')
+    if board.user == request.user:
+        if request.method == "POST":
+            board.delete()
+            return redirect('boards:index')
+        else:
+            return redirect('boards:detail', board_pk)
     else:
-        return redirect('boards:detail', board_pk)
+        return redirect('boards:index')
         
         
 @login_required        
 def update(request, board_pk):
     board = get_object_or_404(Board, pk=board_pk)
-    if request.method == 'POST':
-        form = BoardForm(request.POST, instance = board)
-        if form.is_valid():
-            board = form.save()
-            return redirect('boards:detail', board.pk)
+    if board.user == request.user:
+        if request.method == 'POST':
+            form = BoardForm(request.POST, instance = board)
+            if form.is_valid():
+                board = form.save()
+                return redirect('boards:detail', board.pk)
+        else:
+            form = BoardForm(instance=board)
     else:
-        form = BoardForm(instance=board)
-    context = {'form':form}
+        return redirect('boards:index')
+    context = {
+        'form':form,
+        'board':board,
+    }
     return render(request,'boards/form.html', context)
             
